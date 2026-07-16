@@ -3,6 +3,7 @@ package com.danilobarreto.stockapp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import com.danilobarreto.stockapp.designsystem.theme.StockAppTheme
 import com.danilobarreto.stockapp.quotes.data.QuotesApiClient
 import com.danilobarreto.stockapp.quotes.data.QuotesRepositoryImpl
 import com.danilobarreto.stockapp.quotes.presentation.QuoteScreen
@@ -16,5 +17,8 @@ fun App() {
         val repository = QuotesRepositoryImpl(apiClient)
         QuotesViewModel(repository)
     }
-    QuoteScreen(viewModel)
+
+    StockAppTheme{
+        QuoteScreen(viewModel)
+    }
 }
