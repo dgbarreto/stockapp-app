@@ -47,6 +47,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            implementation("com.danilobarreto.stockapp:quotes:0.1.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
