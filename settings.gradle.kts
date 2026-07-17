@@ -7,6 +7,9 @@ val localProperties = java.util.Properties().apply {
 }
 val useLocalQuotes = localProperties.getProperty("useLocalQuotes", "false").toBoolean()
 
+fun prop(name: String): String? =
+    System.getenv(name) ?: localProperties.getProperty(name)
+
 pluginManagement {
     repositories {
         google {
@@ -31,6 +34,22 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven {
+            name = "GitHubPackagesDesignSystem"
+            url = uri("https://maven.pkg.github.com/dgbarreto/stockapp-designsystem")
+            credentials {
+                username = prop("GITHUB_ACTOR")
+                password = prop("GITHUB_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackagesQuotes"
+            url = uri("https://maven.pkg.github.com/dgbarreto/stockapp-quotes")
+            credentials {
+                username = prop("GITHUB_ACTOR")
+                password = prop("GITHUB_TOKEN")
+            }
+        }
         mavenLocal()
     }
 }
