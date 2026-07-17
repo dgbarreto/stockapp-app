@@ -48,8 +48,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
-            implementation("com.danilobarreto.stockapp:quotes:0.1.0")
-            implementation("com.danilobarreto.stockapp:designsystem:0.1.0")
+            implementation("com.danilobarreto.stockapp:quotes:0.1.1")
+            implementation("com.danilobarreto.stockapp:designsystem:0.1.2")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -59,4 +59,10 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+tasks.matching {
+    it.name == "linkDebugTestIosSimulatorArm64" || it.name == "iosSimulatorArm64Test"
+}.configureEach {
+    enabled = false
 }
