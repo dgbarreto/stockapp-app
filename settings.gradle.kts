@@ -6,6 +6,7 @@ val localProperties = java.util.Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 val useLocalQuotes = localProperties.getProperty("useLocalQuotes", "false").toBoolean()
+val useLocalAuth = localProperties.getProperty("useLocalAuth", "false").toBoolean()
 
 fun prop(name: String): String? =
     System.getenv(name) ?: localProperties.getProperty(name)
@@ -50,6 +51,14 @@ dependencyResolutionManagement {
                 password = prop("GITHUB_TOKEN")
             }
         }
+        maven {
+            name = "GitHubPackagesAuth"
+            url = uri("https://maven.pkg.github.com/dgbarreto/stockapp-auth")
+            credentials {
+                username = prop("GITHUB_ACTOR")
+                password = prop("GITHUB_TOKEN")
+            }
+        }
         mavenLocal()
     }
 }
@@ -62,6 +71,14 @@ if (useLocalQuotes) {
         dependencySubstitution {
             substitute(module("com.danilobarreto.stockapp:quotes"))
                 .using(project(":quotes"))
+        }
+    }
+}
+if (useLocalAuth) {
+    includeBuild("../stockapp-auth") {
+        dependencySubstitution {
+            substitute(module("com.danilobarreto.stockapp:auth"))
+                .using(project(":auth"))
         }
     }
 }
