@@ -57,6 +57,7 @@ kotlin {
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.kotlinxJson)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.auth)
 
             implementation("com.danilobarreto.stockapp:auth:0.1.0")
             implementation("com.danilobarreto.stockapp:quotes:0.1.1")
