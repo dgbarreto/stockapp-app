@@ -9,4 +9,7 @@ object Login
 object Register
 
 @Serializable
-object Quotes
+object Home
+
+@Serializable
+object AddPosition
