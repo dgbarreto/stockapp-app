@@ -60,8 +60,9 @@ kotlin {
             implementation(libs.ktor.client.auth)
 
             implementation("com.danilobarreto.stockapp:auth:0.1.0")
-            implementation("com.danilobarreto.stockapp:quotes:0.1.1")
+            implementation("com.danilobarreto.stockapp:quotes:0.2.0")
             implementation("com.danilobarreto.stockapp:designsystem:0.1.2")
+            implementation("com.danilobarreto.stockapp:portfolio:0.1.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
