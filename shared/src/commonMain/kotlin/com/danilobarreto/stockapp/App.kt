@@ -37,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import com.danilobarreto.stockapp.portfolio.data.PortfolioRepositoryImpl
 import com.danilobarreto.stockapp.portfolio.data.PositionsApiClient
-import com.danilobarreto.stockapp.portfolio.presentation.AddPositionScreen
-import com.danilobarreto.stockapp.portfolio.presentation.AddPositionViewModel
 import com.danilobarreto.stockapp.portfolio.presentation.DashboardScreen
 import com.danilobarreto.stockapp.portfolio.presentation.DashboardViewModel
 import com.danilobarreto.stockapp.quotes.data.FiisApiClient
@@ -144,20 +142,11 @@ fun App() {
                             MainTab.Portfolio -> {
                                 DashboardScreen(
                                     viewModel = dashboardViewModel,
-                                    onAddPosition = { navController.navigate(AddPosition) },
                                 )
                             }
                         }
                     }
                 }
-            }
-            composable<AddPosition> {
-                val addPositionViewModel = remember { AddPositionViewModel(portfolioRepository) }
-                AddPositionScreen(
-                    viewModel = addPositionViewModel,
-                    onBack = { navController.popBackStack() },
-                    onSaved = { navController.popBackStack() },
-                )
             }
         }
     }
