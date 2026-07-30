@@ -1,29 +1,34 @@
 # stockapp-app
 
-Módulo KMP "compositor" do [StockApp](https://github.com/dgbarreto/stockapp-app) — app de acompanhamento de investimentos (cotações, carteira, ordens, indicadores fundamentalistas e calculadora de preço justo), 100% Kotlin Multiplatform + Compose Multiplatform, Android e iOS. Projeto de estudo (Kotlin/KMP/Compose Multiplatform, GitHub Actions, GCP, Kubernetes).
+The "composer" KMP module of StockApp — an investment tracking app (quotes, portfolio, orders, fundamental indicators and a fair-price calculator), 100% Kotlin Multiplatform + Compose Multiplatform, Android and iOS. Learning project (Kotlin/KMP/Compose Multiplatform, GitHub Actions, GCP, Kubernetes).
 
-Agrega os módulos de feature (`stockapp-designsystem`, `stockapp-quotes`, `stockapp-portfolio`, `stockapp-orders`, `stockapp-valuation` — repos separados) num `NavHost` comum.
+Aggregates the feature modules ([`stockapp-designsystem`](https://github.com/dgbarreto/stockapp-designsystem), [`stockapp-auth`](https://github.com/dgbarreto/stockapp-auth), [`stockapp-quotes`](https://github.com/dgbarreto/stockapp-quotes), [`stockapp-portfolio`](https://github.com/dgbarreto/stockapp-portfolio), [`stockapp-orders`](https://github.com/dgbarreto/stockapp-orders) — separate repos, `stockapp-valuation` still to come) into a single `NavHost`.
 
-## Estrutura
+## Structure
 
-- `androidApp/` — app Android fino, gera o APK diretamente (`com.android.application`), só consome `shared`.
-- `shared/` — módulo KMP com o código comum (NavHost, telas), alvo Android (lib) + iOS (framework estático `Shared`).
-- `iosApp/` — projeto Xcode mínimo, único ponto não-Kotlin do projeto (SwiftUI só hospeda o `ComposeUIViewController`).
+- `androidApp/` — thin Android app, generates the APK directly (`com.android.application`), only consumes `shared`.
+- `shared/` — the KMP module with the shared code (composition root, `NavHost`, shared HTTP client), targeting Android (lib) + iOS (static framework `Shared`).
+- `iosApp/` — minimal Xcode project, the only non-Kotlin part of the whole project (SwiftUI just hosts the `ComposeUIViewController`).
+
+## What's in it
+
+- `AppHttpClient.kt` — a single Ktor `HttpClient`, shared across every feature module, with the `Auth`/`bearer` plugin reading the JWT from `stockapp-auth`'s `TokenStorage`. No module besides `auth` itself needs to know about authentication.
+- `Routes.kt`/`App.kt` — the composition root: a `NavHost` with `Login`/`Register` routes, a `Home` route (`Scaffold` + Material3 `NavigationBar` toggling the **Quotes** and **Portfolio** tabs) and `AddPosition` as a stacked route.
 
 ## Status
 
-**Fase 1 — Fundação**: scaffold criado via [KMP Wizard](https://kmp.jetbrains.com/) da JetBrains, NavHost ainda vazio.
+Fully wired end-to-end: sign up/login (`stockapp-auth`) → `Home` with bottom navigation between Quotes (`stockapp-quotes`) and Portfolio (`stockapp-portfolio`) → add a position → logout. Android app builds and runs for real; the iOS shell (`stockapp-app-ios-shell`) is a later roadmap phase, not built yet.
 
 ## Stack
 
-- Kotlin 2.4.0 · Compose Multiplatform 1.11.1 · AGP 9.0.1
+- Kotlin 2.4.0 · Compose Multiplatform 1.11.1 · AGP 9.0.1 · Navigation Compose 2.9.2 · Ktor Client
 
-## Rodando
+## Running
 
 - Android: `./gradlew :androidApp:assembleDebug`
-- iOS: abrir `/iosApp` no Xcode
-- Testes: `./gradlew :shared:testAndroidHostTest` · `./gradlew :shared:iosSimulatorArm64Test`
+- iOS: open `/iosApp` in Xcode
+- Tests: `./gradlew :shared:testAndroidHostTest` · `./gradlew :shared:iosSimulatorArm64Test`
 
 ---
 
-_Progresso mantido manualmente conforme o projeto avança._
+_Progress kept up to date manually as the project moves forward._
