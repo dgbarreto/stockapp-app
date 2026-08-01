@@ -16,12 +16,12 @@ import com.danilobarreto.stockapp.auth.presentation.RegisterViewModel
 import com.danilobarreto.stockapp.designsystem.theme.StockAppTheme
 import com.danilobarreto.stockapp.quotes.data.QuotesApiClient
 import com.danilobarreto.stockapp.quotes.data.QuotesRepositoryImpl
-import com.danilobarreto.stockapp.quotes.presentation.QuoteScreen
 import com.danilobarreto.stockapp.quotes.presentation.QuotesViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -34,6 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.danilobarreto.stockapp.orders.data.OrdersApiClient
+import com.danilobarreto.stockapp.orders.data.OrdersRepositoryImpl
+import com.danilobarreto.stockapp.orders.presentation.OrderBottomSheet
+import com.danilobarreto.stockapp.orders.presentation.OrderFormViewModel
 import kotlinx.coroutines.launch
 import com.danilobarreto.stockapp.portfolio.data.PortfolioRepositoryImpl
 import com.danilobarreto.stockapp.portfolio.data.PositionsApiClient
@@ -68,11 +72,16 @@ fun App() {
         FiisRepositoryImpl(FiisApiClient(baseUrl = appBaseUrl(), httpClient = httpClient))
     }
 
+    val ordersRepository = remember {
+        OrdersRepositoryImpl(OrdersApiClient(httpClient, appBaseUrl()))
+    }
+
     val loginViewModel = remember { LoginViewModel(authRepository) }
     val registerViewModel = remember { RegisterViewModel(authRepository) }
     val quotesViewModel = remember { QuotesViewModel(quotesRepository) }
     val dashboardViewModel = remember { DashboardViewModel(portfolioRepository) }
     val fiisViewModel = remember { FiisViewModel(fiisRepository) }
+    val orderFormViewModel = remember { OrderFormViewModel(ordersRepository) }
 
     val navController = rememberNavController()
     val startDestination = if(authRepository.isLoggedIn.value) Home else Login
@@ -103,6 +112,7 @@ fun App() {
             }
             composable<Home> {
                 var selectedTab by remember { mutableStateOf(MainTab.Quotes) }
+                var showQuickOrder by remember { mutableStateOf(false) }
                 val coroutineScope = rememberCoroutineScope()
 
                 Scaffold(
@@ -143,8 +153,30 @@ fun App() {
                                 DashboardScreen(
                                     viewModel = dashboardViewModel,
                                 )
+                                FloatingActionButton(
+                                    onClick = {
+                                        orderFormViewModel.reset()
+                                        showQuickOrder = true
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .safeContentPadding()
+                                        .padding(16.dp),
+                                ) {
+                                    Text("+")
+                                }
                             }
                         }
+                    }
+                    if (showQuickOrder) {
+                        OrderBottomSheet(
+                            viewModel = orderFormViewModel,
+                            onDismiss = { showQuickOrder = false },
+                            onSaved = {
+                                showQuickOrder = false
+                                dashboardViewModel.load()
+                            },
+                        )
                     }
                 }
             }
