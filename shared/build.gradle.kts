@@ -81,3 +81,12 @@ tasks.matching {
 }.configureEach {
     enabled = false
 }
+
+val fullIosMatrix = project.hasProperty("fullIosMatrix")
+
+tasks.matching { it.name == "linkDebugFrameworkIosArm64" }.configureEach {
+    enabled = fullIosMatrix
+}
+tasks.matching { it.name == "linkReleaseFrameworkIosSimulatorArm64" }.configureEach {
+    enabled = fullIosMatrix
+}
