@@ -47,6 +47,10 @@ import com.danilobarreto.stockapp.quotes.data.FiisApiClient
 import com.danilobarreto.stockapp.quotes.data.FiisRepositoryImpl
 import com.danilobarreto.stockapp.quotes.presentation.AssetQuotesScreen
 import com.danilobarreto.stockapp.quotes.presentation.FiisViewModel
+import com.danilobarreto.stockapp.imports.data.ImportApiClient
+import com.danilobarreto.stockapp.imports.data.ImportRepositoryImpl
+import com.danilobarreto.stockapp.imports.presentation.ImportScreen
+import com.danilobarreto.stockapp.imports.presentation.ImportViewModel
 
 private enum class MainTab { Quotes, Portfolio }
 
@@ -76,12 +80,17 @@ fun App() {
         OrdersRepositoryImpl(OrdersApiClient(httpClient, appBaseUrl()))
     }
 
+    val importRepository = remember {
+        ImportRepositoryImpl(ImportApiClient(httpClient, appBaseUrl()))
+    }
+
     val loginViewModel = remember { LoginViewModel(authRepository) }
     val registerViewModel = remember { RegisterViewModel(authRepository) }
     val quotesViewModel = remember { QuotesViewModel(quotesRepository) }
     val dashboardViewModel = remember { DashboardViewModel(portfolioRepository) }
     val fiisViewModel = remember { FiisViewModel(fiisRepository) }
     val orderFormViewModel = remember { OrderFormViewModel(ordersRepository) }
+    val importViewModel = remember { ImportViewModel(importRepository) }
 
     val navController = rememberNavController()
     val startDestination = if(authRepository.isLoggedIn.value) Home else Login
@@ -165,6 +174,10 @@ fun App() {
                                 ) {
                                     Text("+")
                                 }
+                                TextButton(
+                                    onClick = { navController.navigate(Import) },
+                                    modifier = Modifier.align(Alignment.TopEnd).safeContentPadding().padding(16.dp)
+                                ) { Text("Importar") }
                             }
                         }
                     }
@@ -179,6 +192,12 @@ fun App() {
                         )
                     }
                 }
+            }
+            composable<Import> {
+                ImportScreen(
+                    viewModel = importViewModel,
+                    onBack = { navController.popBackStack() },
+                )
             }
         }
     }
