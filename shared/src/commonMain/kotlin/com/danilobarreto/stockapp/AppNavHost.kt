@@ -71,6 +71,8 @@ fun AppNavHost(
     // Porta-objeto da tela de valuation individual (entrada única, seja pela
     // listagem da carteira ou direto pelo ticker na aba Cotações).
     var valuationViewModel by remember { mutableStateOf<ValuationViewModel?>(null) }
+    // AppNavHost.kt — junto dos outros porta-objeto (antes do NavHost):
+    var selectedTab by remember { mutableStateOf(MainTab.Quotes) }
 
     val openValuation: (AssetValuationInput) -> Unit = { item ->
         valuationViewModel = ValuationViewModel(item.fundamentals)
@@ -110,6 +112,8 @@ fun AppNavHost(
                     navController.navigate(ValuationList)
                 },
                 onOpenValuation = openValuation,
+                selectedTab = selectedTab,
+                onTabSelected = { selectedTab = it },
             )
         }
         composable<Import> {
@@ -147,8 +151,9 @@ private fun HomeScreen(
     orderFormViewModel: OrderFormViewModel,
     onOpenValuationList: (List<AssetValuationInput>) -> Unit,
     onOpenValuation: (AssetValuationInput) -> Unit,
+    selectedTab: MainTab,
+    onTabSelected: (MainTab) -> Unit,
 ) {
-    var selectedTab by remember { mutableStateOf(MainTab.Quotes) }
     var showQuickOrder by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
@@ -171,13 +176,13 @@ private fun HomeScreen(
             NavigationBar {
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Quotes,
-                    onClick = { selectedTab = MainTab.Quotes },
+                    onClick = { onTabSelected(MainTab.Quotes) },
                     icon = { Text("📈") },
                     label = { Text("Cotações") },
                 )
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Portfolio,
-                    onClick = { selectedTab = MainTab.Portfolio },
+                    onClick = { onTabSelected(MainTab.Portfolio) },
                     icon = { Text("💼") },
                     label = { Text("Carteira") },
                 )
