@@ -10,6 +10,7 @@ val useLocalAuth = localProperties.getProperty("useLocalAuth", "false").toBoolea
 val useLocalPortfolio = localProperties.getProperty("useLocalPortfolio", "false").toBoolean()
 val useLocalOrders = localProperties.getProperty("useLocalOrders", "false").toBoolean()
 val useLocalImports = localProperties.getProperty("useLocalImports", "false").toBoolean()
+val useLocalValuation = localProperties.getProperty("useLocalValuation", "false").toBoolean()
 
 fun prop(name: String): String? =
     System.getenv(name) ?: localProperties.getProperty(name)
@@ -86,6 +87,14 @@ dependencyResolutionManagement {
                 password = prop("GITHUB_TOKEN")
             }
         }
+        maven {
+            name = "GitHubPackagesValuation"
+            url = uri("https://maven.pkg.github.com/dgbarreto/stockapp-valuation")
+            credentials {
+                username = prop("GITHUB_ACTOR")
+                password = prop("GITHUB_TOKEN")
+            }
+        }
         mavenLocal()
     }
 }
@@ -130,6 +139,14 @@ if (useLocalImports) {
         dependencySubstitution {
             substitute(module("com.danilobarreto.stockapp:imports"))
                 .using(project(":imports"))
+        }
+    }
+}
+if (useLocalValuation) {
+    includeBuild("../stockapp-valuation") {
+        dependencySubstitution {
+            substitute(module("com.danilobarreto.stockapp:valuation"))
+                .using(project(":valuation"))
         }
     }
 }

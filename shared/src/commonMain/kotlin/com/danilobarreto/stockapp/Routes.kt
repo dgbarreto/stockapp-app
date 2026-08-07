@@ -13,3 +13,9 @@ object Home
 
 @Serializable
 object Import
+
+@Serializable
+object ValuationList
+
+@Serializable
+data class Valuation(val ticker: String)
