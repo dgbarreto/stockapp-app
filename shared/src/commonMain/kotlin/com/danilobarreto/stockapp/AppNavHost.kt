@@ -34,6 +34,7 @@ import com.danilobarreto.stockapp.portfolio.presentation.DashboardScreen
 import com.danilobarreto.stockapp.portfolio.presentation.DashboardUiState
 import com.danilobarreto.stockapp.portfolio.presentation.DashboardViewModel
 import com.danilobarreto.stockapp.quotes.presentation.AssetQuotesScreen
+import com.danilobarreto.stockapp.quotes.presentation.AssetType
 import com.danilobarreto.stockapp.quotes.presentation.FiisViewModel
 import com.danilobarreto.stockapp.quotes.presentation.QuotesViewModel
 import com.danilobarreto.stockapp.valuation.domain.AssetValuationInput
@@ -73,6 +74,7 @@ fun AppNavHost(
     var valuationViewModel by remember { mutableStateOf<ValuationViewModel?>(null) }
     // AppNavHost.kt — junto dos outros porta-objeto (antes do NavHost):
     var selectedTab by remember { mutableStateOf(MainTab.Quotes) }
+    var selectedAssetType by remember { mutableStateOf(AssetType.Stock) } // nova linha
 
     val openValuation: (AssetValuationInput) -> Unit = { item ->
         valuationViewModel = ValuationViewModel(item.fundamentals)
@@ -114,6 +116,8 @@ fun AppNavHost(
                 onOpenValuation = openValuation,
                 selectedTab = selectedTab,
                 onTabSelected = { selectedTab = it },
+                selectedAssetType = selectedAssetType,
+                onAssetTypeSelected = { selectedAssetType = it }
             )
         }
         composable<Import> {
@@ -153,6 +157,8 @@ private fun HomeScreen(
     onOpenValuation: (AssetValuationInput) -> Unit,
     selectedTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
+    selectedAssetType: AssetType,
+    onAssetTypeSelected: (AssetType) -> Unit
 ) {
     var showQuickOrder by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -166,7 +172,7 @@ private fun HomeScreen(
                     TextButton(onClick = {
                         coroutineScope.launch {
                             authRepository.logout()
-                            navController.navigate(Login) { popUpTo<Home> { inclusive = true } }
+                            navController.navigate(Login) { popUpTo(navController.graph.id) { inclusive = true } }
                         }
                     }) { Text("Sair") }
                 },
@@ -196,6 +202,8 @@ private fun HomeScreen(
                     fiisViewModel = fiisViewModel,
                     onViewStockValuation = { onOpenValuation(it.toAssetValuationInput()) },
                     onViewFiiValuation = { onOpenValuation(it.toAssetValuationInput()) },
+                    selectedAssetType = selectedAssetType,
+                    onAssetTypeSelected = onAssetTypeSelected
                 )
                 MainTab.Portfolio -> {
                     DashboardScreen(
