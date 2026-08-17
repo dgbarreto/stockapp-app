@@ -15,3 +15,9 @@ sonar {
         property("sonar.organization", "dgbarreto")
     }
 }
+
+allprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+}
