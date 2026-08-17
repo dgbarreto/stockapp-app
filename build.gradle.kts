@@ -13,6 +13,5 @@ sonar {
     properties {
         property("sonar.projectKey", "dgbarreto_stockapp-app")
         property("sonar.organization", "dgbarreto")
-        property("sonar.sources", "shared/src,androidApp/src")
     }
 }
