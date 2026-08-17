@@ -3,15 +3,19 @@ name: CI
 on:
   push:
     branches:
+      - main
       - 'release/**'
   pull_request:
     branches: [ main ]
 
 jobs:
-  # PR check: Android/JVM + common tests only, on ubuntu-latest (no Apple-target minute multiplier).
+  # PR check + post-merge SonarQube analysis: Android/JVM + common tests only, on
+  # ubuntu-latest (no Apple-target minute multiplier). Runs on PRs (build/test signal)
+  # and on push to main (so SonarCloud gets a real main-branch analysis, not just PR
+  # analyses that vanish once the PR branch is deleted).
   # Kotlin/Native can't cross-compile iOS targets outside a macOS host, so this job never touches them.
   build:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,8 +48,10 @@ jobs:
   # stockapp-app doesn't publish to GitHub Packages (it's the composer app, not a lib),
   # so there's no tag trigger here — APK/AAB/TestFlight artifact steps are a later
   # roadmap phase (Fase 12, polish and publication), not part of this change.
+  # Excludes push to main (that's the lightweight build job above) so a routine
+  # merge never triggers the costly macOS/full-iOS-matrix job.
   release:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
