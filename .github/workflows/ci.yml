@@ -31,6 +31,13 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
+      - name: SonarQube Cloud Scan
+        run: ./gradlew sonar
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   # Full build (all KMP targets, including iOS) — only on a push to a release/* branch.
   # stockapp-app doesn't publish to GitHub Packages (it's the composer app, not a lib),
   # so there's no tag trigger here — APK/AAB/TestFlight artifact steps are a later
