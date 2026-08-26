@@ -98,6 +98,7 @@ fun AppNavHost(
                     navController.navigate(Home) { popUpTo<Login> { inclusive = true } }
                 },
                 onNavigateToLogin = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
             )
         }
         composable<Home> {
