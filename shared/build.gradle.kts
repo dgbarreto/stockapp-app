@@ -60,7 +60,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.auth)
 
-            implementation("com.danilobarreto.stockapp:auth:0.1.1")
+            implementation("com.danilobarreto.stockapp:auth:0.2.0")
             implementation("com.danilobarreto.stockapp:quotes:0.2.5")
             implementation("com.danilobarreto.stockapp:designsystem:0.2.3")
             implementation("com.danilobarreto.stockapp:portfolio:0.1.8")
