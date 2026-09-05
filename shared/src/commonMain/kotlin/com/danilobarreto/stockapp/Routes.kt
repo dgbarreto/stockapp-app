@@ -19,3 +19,15 @@ object ValuationList
 
 @Serializable
 data class Valuation(val ticker: String)
+
+@Serializable
+object ForgotPassword
+
+@Serializable
+object ResetCode
+
+@Serializable
+object NewPassword
+
+@Serializable
+object Profile
