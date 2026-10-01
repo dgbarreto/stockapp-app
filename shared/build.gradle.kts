@@ -61,13 +61,13 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.auth)
 
-            implementation("com.danilobarreto.stockapp:auth:0.3.0")
-            implementation("com.danilobarreto.stockapp:quotes:0.2.9")
-            implementation("com.danilobarreto.stockapp:designsystem:0.3.0")
-            implementation("com.danilobarreto.stockapp:portfolio:0.2.0")
-            implementation("com.danilobarreto.stockapp:orders:0.1.1")
-            implementation("com.danilobarreto.stockapp:imports:0.1.3")
-            implementation("com.danilobarreto.stockapp:valuation:0.1.2")
+            implementation("com.danilobarreto.stockapp:auth:0.5.0")
+            implementation("com.danilobarreto.stockapp:quotes:0.3.0")
+            implementation("com.danilobarreto.stockapp:designsystem:0.4.4")
+            implementation("com.danilobarreto.stockapp:portfolio:0.3.2")
+            implementation("com.danilobarreto.stockapp:orders:0.3.1")
+            implementation("com.danilobarreto.stockapp:imports:0.2.0")
+            implementation("com.danilobarreto.stockapp:valuation:0.2.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

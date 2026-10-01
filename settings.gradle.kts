@@ -11,6 +11,7 @@ val useLocalPortfolio = localProperties.getProperty("useLocalPortfolio", "false"
 val useLocalOrders = localProperties.getProperty("useLocalOrders", "false").toBoolean()
 val useLocalImports = localProperties.getProperty("useLocalImports", "false").toBoolean()
 val useLocalValuation = localProperties.getProperty("useLocalValuation", "false").toBoolean()
+val useLocalDesignSystem = localProperties.getProperty("useLocalDesignSystem", "false").toBoolean()
 
 fun prop(name: String): String? =
     System.getenv(name) ?: localProperties.getProperty(name)
@@ -102,6 +103,14 @@ dependencyResolutionManagement {
 include(":androidApp")
 include(":shared")
 
+//if (useLocalDesignSystem) {
+//    includeBuild("../stockapp-designsystem") {
+//        dependencySubstitution {
+//            substitute(module("com.danilobarreto.stockapp:designsystem"))
+//                .using(project(":designsystem"))
+//        }
+//    }
+//}
 if (useLocalQuotes) {
     includeBuild("../stockapp-quotes") {
         dependencySubstitution {

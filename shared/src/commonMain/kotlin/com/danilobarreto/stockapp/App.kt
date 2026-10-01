@@ -28,6 +28,8 @@ import com.danilobarreto.stockapp.quotes.presentation.FiisViewModel
 import com.danilobarreto.stockapp.quotes.presentation.QuotesViewModel
 import com.danilobarreto.stockapp.auth.presentation.ProfileViewModel
 import com.danilobarreto.stockapp.portfolio.presentation.HomeViewModel
+import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailViewModel
+import com.danilobarreto.stockapp.quotes.presentation.FiiDetailViewModel
 
 @Composable
 @Preview
@@ -64,6 +66,8 @@ fun App() {
     val passwordResetViewModel = remember { PasswordResetViewModel(authRepository) }
     val homeViewModel = remember { HomeViewModel(portfolioRepository) }
     val profileViewModel = remember { ProfileViewModel(authRepository) }
+    val quoteDetailViewModel = remember { QuoteDetailViewModel(quotesRepository) }
+    val fiiDetailViewModel = remember { FiiDetailViewModel(fiisRepository) }
 
     val navController = rememberNavController()
     val startDestination = if (authRepository.isLoggedIn.value) Home else Login
@@ -79,10 +83,13 @@ fun App() {
             fiisViewModel = fiisViewModel,
             dashboardViewModel = dashboardViewModel,
             orderFormViewModel = orderFormViewModel,
+            ordersRepository = ordersRepository,
             importViewModel = importViewModel,
             passwordResetViewModel = passwordResetViewModel,
             homeViewModel = homeViewModel,
             profileViewModel = profileViewModel,
+            quoteDetailViewModel = quoteDetailViewModel,
+            fiiDetailViewModel = fiiDetailViewModel,
         )
     }
 }

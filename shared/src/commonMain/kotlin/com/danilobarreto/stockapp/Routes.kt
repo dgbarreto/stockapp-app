@@ -31,3 +31,8 @@ object NewPassword
 
 @Serializable
 object Profile
+
+@Serializable
+data class AssetDetail(val ticker: String, val assetType: String)
+
+@Serializable object Orders

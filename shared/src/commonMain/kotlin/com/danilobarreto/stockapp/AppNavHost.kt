@@ -69,6 +69,16 @@ import com.danilobarreto.stockapp.designsystem.theme.StockAppColors
 import com.danilobarreto.stockapp.designsystem.theme.StockAppTypography
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.runtime.LaunchedEffect
+import com.danilobarreto.stockapp.quotes.presentation.FiiDetailScreen
+import com.danilobarreto.stockapp.quotes.presentation.FiiDetailViewModel
+import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailScreen
+import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailViewModel
+import com.danilobarreto.stockapp.orders.domain.OrdersRepository
+import com.danilobarreto.stockapp.orders.presentation.OrdersScreen
+import com.danilobarreto.stockapp.orders.presentation.OrdersViewModel
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 
 private enum class MainTab { Home, Portfolio, Quotes, Profile }
 
@@ -83,16 +93,32 @@ fun AppNavHost(
     fiisViewModel: FiisViewModel,
     dashboardViewModel: DashboardViewModel,
     orderFormViewModel: OrderFormViewModel,
+    ordersRepository: OrdersRepository,
     importViewModel: ImportViewModel,
     passwordResetViewModel: PasswordResetViewModel,
     homeViewModel: HomeViewModel,
     profileViewModel: ProfileViewModel,
+    quoteDetailViewModel: QuoteDetailViewModel,
+    fiiDetailViewModel: FiiDetailViewModel,
 ) {
     var valuationListViewModel by remember { mutableStateOf<ValuationListViewModel?>(null) }
     var valuationItems by remember { mutableStateOf<List<AssetValuationInput>>(emptyList()) }
     var valuationViewModel by remember { mutableStateOf<ValuationViewModel?>(null) }
     var selectedTab by remember { mutableStateOf(MainTab.Home) }
     var selectedAssetType by remember { mutableStateOf(AssetType.Stock) }
+
+    // Sessão caiu durante o uso (refresh falhou ou logout) → volta pro Login, limpando a pilha.
+    LaunchedEffect(authRepository) {
+        authRepository.isLoggedIn
+            .drop(1)          // ignora o valor inicial — só reage a transições
+            .filter { !it }   // true → false
+            .collect {
+                selectedTab = MainTab.Home
+                navController.navigate(Login) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
+            }
+    }
 
     val openValuation: (AssetValuationInput) -> Unit = { item ->
         valuationViewModel = ValuationViewModel(item.fundamentals)
@@ -166,7 +192,14 @@ fun AppNavHost(
             )
         }
         composable<Import> {
-            ImportScreen(viewModel = importViewModel, onBack = { navController.popBackStack() })
+            ImportScreen(
+                viewModel = importViewModel,
+                onBack = { navController.popBackStack() },
+                onViewCarteira = {
+                    selectedTab = MainTab.Portfolio
+                    navController.popBackStack()
+                },
+            )
         }
         composable<ValuationList> {
             valuationListViewModel?.let { vm ->
@@ -183,6 +216,76 @@ fun AppNavHost(
             val args = backStackEntry.toRoute<Valuation>()
             valuationViewModel?.let { vm ->
                 ValuationScreen(viewModel = vm, ticker = args.ticker, onBack = { navController.popBackStack() })
+            }
+        }
+        composable<AssetDetail> { backStackEntry ->
+            val args = backStackEntry.toRoute<AssetDetail>()
+            var showQuickOrderFromDetail by remember { mutableStateOf(false) }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                val onNewOrder: () -> Unit = {
+                    orderFormViewModel.reset()
+                    showQuickOrderFromDetail = true
+                }
+                val onAlert: () -> Unit = {
+                    // Alertas ainda não existem no app — placeholder até a feature ser construída.
+                }
+
+                if (args.assetType == "FII") {
+                    FiiDetailScreen(
+                        viewModel = fiiDetailViewModel,
+                        ticker = args.ticker,
+                        onBack = { navController.popBackStack() },
+                        onNewOrder = onNewOrder,
+                        onAlert = onAlert,
+                    )
+                } else {
+                    QuoteDetailScreen(
+                        viewModel = quoteDetailViewModel,
+                        ticker = args.ticker,
+                        onBack = { navController.popBackStack() },
+                        onNewOrder = onNewOrder,
+                        onAlert = onAlert,
+                    )
+                }
+
+                if (showQuickOrderFromDetail) {
+                    OrderBottomSheet(
+                        viewModel = orderFormViewModel,
+                        onDismiss = { showQuickOrderFromDetail = false },
+                        onSaved = {
+                            showQuickOrderFromDetail = false
+                            dashboardViewModel.load()
+                            navController.popBackStack()
+                        },
+                    )
+                }
+            }
+        }
+        composable<Orders> {
+            val ordersViewModel = remember { OrdersViewModel(ordersRepository) }
+            var showQuickOrderFromOrders by remember { mutableStateOf(false) }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                OrdersScreen(
+                    viewModel = ordersViewModel,
+                    onNewOrder = {
+                        orderFormViewModel.reset()
+                        showQuickOrderFromOrders = true
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+
+                if (showQuickOrderFromOrders) {
+                    OrderBottomSheet(
+                        viewModel = orderFormViewModel,
+                        onDismiss = { showQuickOrderFromOrders = false },
+                        onSaved = {
+                            showQuickOrderFromOrders = false
+                            ordersViewModel.load()
+                        },
+                    )
+                }
             }
         }
     }
@@ -210,6 +313,8 @@ private fun MainShell(
     val dashboardState by dashboardViewModel.uiState.collectAsState()
     val profileState by profileViewModel.uiState.collectAsState()
     val userName = (profileState as? ProfileUiState.Success)?.profile?.name ?: ""
+
+    LaunchedEffect(Unit) { profileViewModel.load() }
 
     SetStatusBarAppearance(useLightIcons = selectedTab == MainTab.Home)
 
@@ -252,6 +357,8 @@ private fun MainShell(
                     fiisViewModel = fiisViewModel,
                     onViewStockValuation = { onOpenValuation(it.toAssetValuationInput()) },
                     onViewFiiValuation = { onOpenValuation(it.toAssetValuationInput()) },
+                    onOpenStockDetail = { ticker -> navController.navigate(AssetDetail(ticker = ticker, assetType = "STOCK")) },
+                    onOpenFiiDetail = { ticker -> navController.navigate(AssetDetail(ticker = ticker, assetType = "FII")) },
                     selectedAssetType = selectedAssetType,
                     onAssetTypeSelected = onAssetTypeSelected
                 )
@@ -268,12 +375,10 @@ private fun MainShell(
                 }
                 MainTab.Profile -> ProfileScreen(
                     viewModel = profileViewModel,
-                    onLogout = {
-                        coroutineScope.launch {
-                            authRepository.logout()
-                            navController.navigate(Login) { popUpTo(navController.graph.id) { inclusive = true } }
-                        }
-                    },
+                    onLogout = { coroutineScope.launch { authRepository.logout() } },
+                    onMinhasOrdens = { navController.navigate(Orders) },
+                    onImportacoes = { navController.navigate(Import) },
+                    onValuation = openValuationFromDashboard,
                 )
             }
         }
@@ -284,6 +389,7 @@ private fun MainShell(
                 onSaved = {
                     showQuickOrder = false
                     dashboardViewModel.load()
+                    onTabSelected(MainTab.Portfolio)
                 },
             )
         }
