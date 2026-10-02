@@ -8,6 +8,7 @@ import com.danilobarreto.stockapp.auth.data.AuthApiClient
 import com.danilobarreto.stockapp.auth.data.AuthRepositoryImpl
 import com.danilobarreto.stockapp.auth.data.TokenStorage
 import com.danilobarreto.stockapp.auth.presentation.LoginViewModel
+import com.danilobarreto.stockapp.auth.presentation.PasswordResetViewModel
 import com.danilobarreto.stockapp.auth.presentation.RegisterViewModel
 import com.danilobarreto.stockapp.designsystem.theme.StockAppTheme
 import com.danilobarreto.stockapp.imports.data.ImportApiClient
@@ -25,6 +26,10 @@ import com.danilobarreto.stockapp.quotes.data.QuotesApiClient
 import com.danilobarreto.stockapp.quotes.data.QuotesRepositoryImpl
 import com.danilobarreto.stockapp.quotes.presentation.FiisViewModel
 import com.danilobarreto.stockapp.quotes.presentation.QuotesViewModel
+import com.danilobarreto.stockapp.auth.presentation.ProfileViewModel
+import com.danilobarreto.stockapp.portfolio.presentation.HomeViewModel
+import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailViewModel
+import com.danilobarreto.stockapp.quotes.presentation.FiiDetailViewModel
 
 @Composable
 @Preview
@@ -58,6 +63,11 @@ fun App() {
     val fiisViewModel = remember { FiisViewModel(fiisRepository) }
     val orderFormViewModel = remember { OrderFormViewModel(ordersRepository) }
     val importViewModel = remember { ImportViewModel(importRepository) }
+    val passwordResetViewModel = remember { PasswordResetViewModel(authRepository) }
+    val homeViewModel = remember { HomeViewModel(portfolioRepository) }
+    val profileViewModel = remember { ProfileViewModel(authRepository) }
+    val quoteDetailViewModel = remember { QuoteDetailViewModel(quotesRepository) }
+    val fiiDetailViewModel = remember { FiiDetailViewModel(fiisRepository) }
 
     val navController = rememberNavController()
     val startDestination = if (authRepository.isLoggedIn.value) Home else Login
@@ -73,7 +83,13 @@ fun App() {
             fiisViewModel = fiisViewModel,
             dashboardViewModel = dashboardViewModel,
             orderFormViewModel = orderFormViewModel,
+            ordersRepository = ordersRepository,
             importViewModel = importViewModel,
+            passwordResetViewModel = passwordResetViewModel,
+            homeViewModel = homeViewModel,
+            profileViewModel = profileViewModel,
+            quoteDetailViewModel = quoteDetailViewModel,
+            fiiDetailViewModel = fiiDetailViewModel,
         )
     }
 }

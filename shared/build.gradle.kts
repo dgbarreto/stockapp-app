@@ -40,6 +40,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.core.ktx)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -60,13 +61,13 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.auth)
 
-            implementation("com.danilobarreto.stockapp:auth:0.2.0")
-            implementation("com.danilobarreto.stockapp:quotes:0.2.5")
-            implementation("com.danilobarreto.stockapp:designsystem:0.2.3")
-            implementation("com.danilobarreto.stockapp:portfolio:0.1.8")
-            implementation("com.danilobarreto.stockapp:orders:0.1.1")
-            implementation("com.danilobarreto.stockapp:imports:0.1.3")
-            implementation("com.danilobarreto.stockapp:valuation:0.1.2")
+            implementation("com.danilobarreto.stockapp:auth:0.5.0")
+            implementation("com.danilobarreto.stockapp:quotes:0.3.0")
+            implementation("com.danilobarreto.stockapp:designsystem:0.4.4")
+            implementation("com.danilobarreto.stockapp:portfolio:0.3.2")
+            implementation("com.danilobarreto.stockapp:orders:0.3.1")
+            implementation("com.danilobarreto.stockapp:imports:0.2.0")
+            implementation("com.danilobarreto.stockapp:valuation:0.2.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
