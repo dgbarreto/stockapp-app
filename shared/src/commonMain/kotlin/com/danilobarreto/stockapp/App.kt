@@ -35,6 +35,7 @@ import com.danilobarreto.stockapp.quotes.presentation.FiiDetailViewModel
 @Preview
 fun App() {
     val tokenStorage = remember { TokenStorage() }
+    val uiPreferences = remember { UiPreferences() }
     val httpClient = remember { createAppHttpClient(tokenStorage) }
 
     val authRepository = remember {
@@ -90,6 +91,7 @@ fun App() {
             profileViewModel = profileViewModel,
             quoteDetailViewModel = quoteDetailViewModel,
             fiiDetailViewModel = fiiDetailViewModel,
+            uiPreferences = uiPreferences
         )
     }
 }

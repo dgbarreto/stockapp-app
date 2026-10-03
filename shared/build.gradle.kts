@@ -60,6 +60,8 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinxJson)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.auth)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.noarg)
 
             implementation("com.danilobarreto.stockapp:auth:0.5.0")
             implementation("com.danilobarreto.stockapp:quotes:0.3.0")

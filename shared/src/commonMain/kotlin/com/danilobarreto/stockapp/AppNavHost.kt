@@ -100,6 +100,7 @@ fun AppNavHost(
     profileViewModel: ProfileViewModel,
     quoteDetailViewModel: QuoteDetailViewModel,
     fiiDetailViewModel: FiiDetailViewModel,
+    uiPreferences: UiPreferences,
 ) {
     var valuationListViewModel by remember { mutableStateOf<ValuationListViewModel?>(null) }
     var valuationItems by remember { mutableStateOf<List<AssetValuationInput>>(emptyList()) }
@@ -188,7 +189,8 @@ fun AppNavHost(
                 selectedTab = selectedTab,
                 onTabSelected = { selectedTab = it },
                 selectedAssetType = selectedAssetType,
-                onAssetTypeSelected = { selectedAssetType = it }
+                onAssetTypeSelected = { selectedAssetType = it },
+                uiPreferences = uiPreferences
             )
         }
         composable<Import> {
@@ -306,13 +308,15 @@ private fun MainShell(
     selectedTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
     selectedAssetType: AssetType,
-    onAssetTypeSelected: (AssetType) -> Unit
+    onAssetTypeSelected: (AssetType) -> Unit,
+    uiPreferences: UiPreferences
 ) {
     var showQuickOrder by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
     val profileState by profileViewModel.uiState.collectAsState()
     val userName = (profileState as? ProfileUiState.Success)?.profile?.name ?: ""
+    val balanceVisible by uiPreferences.balanceVisible.collectAsState()
 
     LaunchedEffect(Unit) { profileViewModel.load() }
 
@@ -351,6 +355,8 @@ private fun MainShell(
                     onValuation = openValuationFromDashboard,
                     onCotacoes = { onTabSelected(MainTab.Quotes) },
                     onVerCarteira = { onTabSelected(MainTab.Portfolio) },
+                    balanceVisible = balanceVisible,
+                    onToggleBalance = uiPreferences::toggleBalanceVisible,
                 )
                 MainTab.Quotes -> AssetQuotesScreen(
                     quotesViewModel = quotesViewModel,
@@ -371,6 +377,8 @@ private fun MainShell(
                         },
                         onImport = { navController.navigate(Import) },
                         onViewValuation = openValuationFromDashboard,
+                        balanceVisible = balanceVisible,
+                        onToggleBalance = uiPreferences::toggleBalanceVisible,
                     )
                 }
                 MainTab.Profile -> ProfileScreen(
