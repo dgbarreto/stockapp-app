@@ -26,7 +26,7 @@ fun PositionSummary.toAssetValuationInput(): AssetValuationInput = AssetValuatio
 // Idem, pra entrada individual vinda da aba Cotações (ação).
 fun QuoteFundamentals.toAssetValuationInput(): AssetValuationInput = AssetValuationInput(
     ticker = ticker,
-    name = null, // /quotes/:ticker não devolve nome da empresa
+    name = companyName,
     fundamentals = AssetFundamentals(
         currentPrice = closePrice,
         eps = lpa,
