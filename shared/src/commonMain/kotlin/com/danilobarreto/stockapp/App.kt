@@ -30,6 +30,7 @@ import com.danilobarreto.stockapp.auth.presentation.ProfileViewModel
 import com.danilobarreto.stockapp.portfolio.presentation.HomeViewModel
 import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailViewModel
 import com.danilobarreto.stockapp.quotes.presentation.FiiDetailViewModel
+import com.danilobarreto.stockapp.orders.domain.AssetType as OrderAssetType
 
 @Composable
 @Preview
@@ -62,7 +63,17 @@ fun App() {
     val quotesViewModel = remember { QuotesViewModel(quotesRepository) }
     val dashboardViewModel = remember { DashboardViewModel(portfolioRepository) }
     val fiisViewModel = remember { FiisViewModel(fiisRepository) }
-    val orderFormViewModel = remember { OrderFormViewModel(ordersRepository) }
+    val orderFormViewModel = remember {
+        OrderFormViewModel(
+            repository = ordersRepository,
+            priceLookup = { ticker, type ->
+                when (type) {
+                    OrderAssetType.FII -> fiisRepository.getFii(ticker).closePrice
+                    OrderAssetType.STOCK -> quotesRepository.getFundamentals(ticker).closePrice
+                }
+            },
+        )
+    }
     val importViewModel = remember { ImportViewModel(importRepository) }
     val passwordResetViewModel = remember { PasswordResetViewModel(authRepository) }
     val homeViewModel = remember { HomeViewModel(portfolioRepository) }
