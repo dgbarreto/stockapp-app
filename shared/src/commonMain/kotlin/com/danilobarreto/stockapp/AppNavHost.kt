@@ -77,8 +77,10 @@ import com.danilobarreto.stockapp.quotes.presentation.QuoteDetailViewModel
 import com.danilobarreto.stockapp.orders.domain.OrdersRepository
 import com.danilobarreto.stockapp.orders.presentation.OrdersScreen
 import com.danilobarreto.stockapp.orders.presentation.OrdersViewModel
+import com.danilobarreto.stockapp.quotes.presentation.AssetDetailUiState
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import com.danilobarreto.stockapp.orders.domain.AssetType as OrderAssetType
 
 private enum class MainTab { Home, Portfolio, Quotes, Profile }
 
@@ -226,7 +228,13 @@ fun AppNavHost(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val onNewOrder: () -> Unit = {
-                    orderFormViewModel.reset()
+                    val isFii = args.assetType == "FII"
+                    val detailState = if (isFii) fiiDetailViewModel.uiState.value else quoteDetailViewModel.uiState.value
+                    orderFormViewModel.prefill(
+                        ticker = args.ticker,
+                        assetType = if (isFii) OrderAssetType.FII else OrderAssetType.STOCK,
+                        price = (detailState as? AssetDetailUiState.Success)?.summary?.price,
+                    )
                     showQuickOrderFromDetail = true
                 }
                 val onAlert: () -> Unit = {
@@ -240,6 +248,7 @@ fun AppNavHost(
                         onBack = { navController.popBackStack() },
                         onNewOrder = onNewOrder,
                         onAlert = onAlert,
+                        onViewValuation = { openValuation(it.toAssetValuationInput()) },
                     )
                 } else {
                     QuoteDetailScreen(
@@ -248,6 +257,7 @@ fun AppNavHost(
                         onBack = { navController.popBackStack() },
                         onNewOrder = onNewOrder,
                         onAlert = onAlert,
+                        onViewValuation = { openValuation(it.toAssetValuationInput()) },
                     )
                 }
 
